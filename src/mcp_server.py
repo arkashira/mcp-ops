@@ -22,34 +22,32 @@ class MCPDeployment:
     def add_governance_policy(self, policy: str):
         self.governance_policies.append(policy)
 
-    def deploy_server(self, server: MCPServer):
-        if server not in self.servers:
-            raise ValueError("Server not found")
-        if not self.security_policies or not self.governance_policies:
-            raise ValueError("Security and governance policies must be defined")
-        # Simulate deployment process
-        server.status = "deploying"
-        return server
+    def deploy_server(self, server_name: str):
+        for server in self.servers:
+            if server.name == server_name:
+                server.status = "deploying"
+                return server
+        return None
 
-    def get_deployment_status(self, server: MCPServer):
-        return server.status
+    def get_deployment_status(self, server_name: str):
+        for server in self.servers:
+            if server.name == server_name:
+                return server.status
+        return None
 
-    def get_deployment_logs(self, server: MCPServer):
-        # Simulate deployment logs
-        return f"Deployment logs for {server.name}"
+    def enforce_policies(self, server_name: str):
+        for server in self.servers:
+            if server.name == server_name:
+                for policy in self.security_policies:
+                    print(f"Enforcing security policy {policy} on {server_name}")
+                for policy in self.governance_policies:
+                    print(f"Enforcing governance policy {policy} on {server_name}")
+                return True
+        return False
 
-class MCPPlatform:
-    def __init__(self):
-        self.servers = []
-        self.deployment = MCPDeployment()
-
-    def discover_servers(self):
-        # Simulate server discovery
-        self.servers = [MCPServer("Server1", "available"), MCPServer("Server2", "available")]
-        return self.servers
-
-    def initiate_deployment(self, server: MCPServer):
-        return self.deployment.deploy_server(server)
-
-    def get_managed_servers(self):
-        return self.deployment.servers
+    def add_to_managed_servers(self, server_name: str):
+        for server in self.servers:
+            if server.name == server_name:
+                print(f"Adding {server_name} to managed servers list")
+                return True
+        return False
