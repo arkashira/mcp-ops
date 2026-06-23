@@ -1,16 +1,17 @@
-# MCP Server Deployment
-This project provides a simple implementation of MCP server deployment capabilities.
+# MCP Ops
+
+MCP Ops is a Python project that provides a simple way to manage and search for MCP servers.
 
 ## Features
-* Deploy MCP servers from a list of discovered servers
-* Enforce organization's predefined security and governance policies
-* Provide real-time deployment status and logs to the user
-* Automatically add successfully deployed MCP servers to the organization's managed servers list
+
+* Search for MCP servers by keyword
+* Filter search results by server type and location
+* Get detailed information about each server
 
 ## Usage
-1. Create an instance of the `MCPDeployment` class
-2. Add MCP servers to the deployment using the `add_server` method
-3. Deploy an MCP server using the `deploy_server` method
-4. Get the deployment status of an MCP server using the `get_deployment_status` method
-5. Enforce security and governance policies on an MCP server using the `enforce_policies` method
-6. Add an MCP server to the managed servers list using the `add_to_managed_servers` method
+
+1. Create an instance of the `MCP_Ops` class
+2. Add MCP servers to the instance using the `add_server` method
+3. Search for servers using the `search_servers` method
+4. Filter search results using the `filter_servers` method
+5. Get detailed information about each server using the `get_server_details` method
