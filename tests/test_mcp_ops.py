@@ -1,29 +1,37 @@
+from mcp_ops import MCPRegistry, Server
 import pytest
-from mcp_ops import MCP_Ops, MCP_Server
 
-@pytest.fixture
-def mcp_ops():
-    mcp_ops = MCP_Ops()
-    mcp_ops.add_server(MCP_Server("1.0", ["capability1", "capability2"], ["patch1", "patch2"], "type1", "location1"))
-    mcp_ops.add_server(MCP_Server("2.0", ["capability3", "capability4"], ["patch3", "patch4"], "type2", "location2"))
-    return mcp_ops
+def test_register_server():
+    registry = MCPRegistry()
+    server = Server("1.0", ["tag1", "tag2"], "compliant")
+    registry.register_server(server)
+    assert len(registry.get_servers()) == 1
 
-def test_search_servers(mcp_ops):
-    assert len(mcp_ops.search_servers("capability1")) == 1
-    assert len(mcp_ops.search_servers("capability3")) == 1
-    assert len(mcp_ops.search_servers("non-existent")) == 0
+def test_register_server_missing_mandatory_fields():
+    registry = MCPRegistry()
+    server = Server("", ["tag1", "tag2"], "compliant")
+    with pytest.raises(ValueError):
+        registry.register_server(server)
 
-def test_filter_servers(mcp_ops):
-    assert len(mcp_ops.filter_servers(server_type="type1")) == 1
-    assert len(mcp_ops.filter_servers(location="location2")) == 1
-    assert len(mcp_ops.filter_servers(server_type="type1", location="location1")) == 1
-    assert len(mcp_ops.filter_servers(server_type="non-existent")) == 0
+def test_get_servers_by_tags():
+    registry = MCPRegistry()
+    server1 = Server("1.0", ["tag1", "tag2"], "compliant")
+    server2 = Server("2.0", ["tag2", "tag3"], "non-compliant")
+    registry.register_server(server1)
+    registry.register_server(server2)
+    assert len(registry.get_servers(tags=["tag1"])) == 1
 
-def test_get_server_details(mcp_ops):
-    server = mcp_ops.servers[0]
-    details = mcp_ops.get_server_details(server)
-    assert details["version"] == "1.0"
-    assert details["capabilities"] == ["capability1", "capability2"]
-    assert details["security_patches"] == ["patch1", "patch2"]
-    assert details["server_type"] == "type1"
-    assert details["location"] == "location1"
+def test_get_servers_by_compliance_status():
+    registry = MCPRegistry()
+    server1 = Server("1.0", ["tag1", "tag2"], "compliant")
+    server2 = Server("2.0", ["tag2", "tag3"], "non-compliant")
+    registry.register_server(server1)
+    registry.register_server(server2)
+    assert len(registry.get_servers(compliance_status="compliant")) == 1
+
+def test_to_json():
+    registry = MCPRegistry()
+    server = Server("1.0", ["tag1", "tag2"], "compliant")
+    registry.register_server(server)
+    expected_json = '[{"version": "1.0", "tags": ["tag1", "tag2"], "compliance_status": "compliant"}]'
+    assert registry.to_json() == expected_json

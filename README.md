@@ -1,10 +1,8 @@
-# Governance Engine
-
-A simple governance engine that checks compliance status of servers.
+# MCP Ops
+MCP Ops is a Python project for registering and managing MCP servers with metadata.
 
 ## Usage
+To use MCP Ops, create an instance of the `MCPRegistry` class and register servers using the `register_server` method. You can then retrieve registered servers using the `get_servers` method.
 
-1. Create a `GovernanceEngine` instance with a list of policies.
-2. Add servers to the engine using `add_server`.
-3. Get the compliance status of a server using `get_compliance_status`.
-4. Flag a server for remediation using `flag_for_remediation`.
+## Testing
+To run the tests, use the `pytest` command.

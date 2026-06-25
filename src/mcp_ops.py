@@ -1,38 +1,29 @@
 import json
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 
 @dataclass
-class MCP_Server:
+class Server:
     version: str
-    capabilities: List[str]
-    security_patches: List[str]
-    server_type: str
-    location: str
+    tags: List[str]
+    compliance_status: str
 
-class MCP_Ops:
+class MCPRegistry:
     def __init__(self):
         self.servers = []
 
-    def add_server(self, server: MCP_Server):
+    def register_server(self, server: Server) -> None:
+        if not all([server.version, server.tags, server.compliance_status]):
+            raise ValueError("Mandatory fields are missing")
         self.servers.append(server)
 
-    def search_servers(self, keyword: str) -> List[MCP_Server]:
-        return [server for server in self.servers if keyword in server.version or keyword in server.capabilities or keyword in server.security_patches]
-
-    def filter_servers(self, server_type: str = None, location: str = None) -> List[MCP_Server]:
+    def get_servers(self, tags: List[str] = None, compliance_status: str = None) -> List[Server]:
         filtered_servers = self.servers
-        if server_type:
-            filtered_servers = [server for server in filtered_servers if server.server_type == server_type]
-        if location:
-            filtered_servers = [server for server in filtered_servers if server.location == location]
+        if tags:
+            filtered_servers = [s for s in filtered_servers if any(t in s.tags for t in tags)]
+        if compliance_status:
+            filtered_servers = [s for s in filtered_servers if s.compliance_status == compliance_status]
         return filtered_servers
 
-    def get_server_details(self, server: MCP_Server) -> dict:
-        return {
-            "version": server.version,
-            "capabilities": server.capabilities,
-            "security_patches": server.security_patches,
-            "server_type": server.server_type,
-            "location": server.location
-        }
+    def to_json(self) -> str:
+        return json.dumps([{"version": s.version, "tags": s.tags, "compliance_status": s.compliance_status} for s in self.servers])
